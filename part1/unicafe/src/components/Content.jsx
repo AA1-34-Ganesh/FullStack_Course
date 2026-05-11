@@ -10,7 +10,9 @@ export const Content= (props)=>{
      <p>Good:{props.good}</p> 
      <p>Neutral:{props.neutral}</p>
      <p>Bad:{props.bad}</p>
-
+     <p>All:{props.total}</p>
+     <p>Average:{props.average}</p>
+      <p>Positive:{props.positive}%</p>
     </div>
     )
 }
