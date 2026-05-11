@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Header } from './components/Header'
-import { Content } from './components/Content'
+import { Statistics } from './components/Statistics';
 
 const App = () => {
 
@@ -24,7 +24,7 @@ const App = () => {
   return (
     <div>
      <Header good={rateGood} neutral={rateNeutral} bad={rateBad} />
-     <Content good={good} neutral={neutral} bad={bad} average={average} total={total} positive={positiveFeedback}/>
+     <Statistics good={good} neutral={neutral} bad={bad} average={average} total={total} positive={positiveFeedback}/>
     </div>
   )
 }
