@@ -46,6 +46,18 @@ const App = () => {
         setPersons(initialData)
       })
   }, [])
+  const remove=(id)=>{
+     const person=persons.find(person=>person.id===id);
+
+     const confirmDelete=window.confirm(
+       `Delete ${person.name}`
+     )
+     if(confirmDelete){
+      personService.deletePerson(id).then(()=>{
+        setPersons(persons.filter(person=>person.id !==id))
+      })
+     }
+  }
   return (
     <div>
       <h2>Phonebook</h2>
@@ -54,9 +66,9 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm newName={newName} addDetails={addDetails} newNumber={newNumber} handleInputChange={handleInputChange}
         handleInputNumber={handleInputNumber} />
-
+      
       <h2>Numbers</h2>
-      <Persons filterNames={filterNames} />
+      <Persons filterNames={filterNames} remove={remove} />
     </div>
   )
 }

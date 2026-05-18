@@ -12,4 +12,8 @@ const create=(newObject)=>{
     const newOne=axios.post(baseUrl,newObject);
     return newOne.then((response)=>response.data)
 }
-export default { getAll, create}
+ const deletePerson=(id)=>{
+    const deletePer=axios.delete(`${baseUrl}/${id}`);
+    return deletePer.then((response)=>response.data)
+}
+export default { getAll, create,deletePerson}
