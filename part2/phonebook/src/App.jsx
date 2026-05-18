@@ -30,14 +30,18 @@ const App = () => {
     } else {
       const nameObject = {
         name: newName,
-        number: newNumber,
-        id: persons.length + 1
+        number: newNumber
       }
-      setPersons(persons.concat(nameObject));
+       const create= axios.post("http://localhost:3001/persons",nameObject).then(response=>{
+      setPersons(persons.concat(response.data));
+   })
+     
     }
     setNewName('');
     setNumber('');
   }
+    
+
 
   useEffect(() => {
     axios.get("http://localhost:3001/persons").then(response => {
