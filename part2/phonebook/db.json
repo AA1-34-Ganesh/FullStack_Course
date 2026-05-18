@@ -29,6 +29,16 @@
       "name": "vishnu",
       "number": "234534213",
       "id": "52kSJiq9uTs"
+    },
+    {
+      "name": "chinna",
+      "number": "12345987654",
+      "id": "qK1LjErgj7I"
+    },
+    {
+      "name": "pushpa",
+      "number": "23164327",
+      "id": "wAQ8-klxcpQ"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
