@@ -16,4 +16,8 @@ const create=(newObject)=>{
     const deletePer=axios.delete(`${baseUrl}/${id}`);
     return deletePer.then((response)=>response.data)
 }
-export default { getAll, create,deletePerson}
+const update=(id,updatedObject)=>{
+     const request=axios.put(`${baseUrl}/${id}`,updatedObject);
+     return request.then((response)=>response.data);
+}
+export default { getAll, create,deletePerson,update}

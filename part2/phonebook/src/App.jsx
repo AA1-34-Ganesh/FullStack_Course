@@ -23,40 +23,53 @@ const App = () => {
   }
   const addDetails = (event) => {
     event.preventDefault();
-    const nameExists = persons.some(
+    const nameExists = persons.find(
       (person) => person.name.toLowerCase() === newName.toLowerCase()
     );
     if (nameExists) {
-      alert(`${newName} is already added to phonebook `)
+      const confirmExist = window.confirm((`${newName} is already added to phonebook, replace the old number with a new one? `));
+      if (confirmExist) {
+
+        const updatedPerson = {
+          ...nameExists,
+          number: newNumber
+        }
+        personService.update(nameExists.id, updatedPerson).then((response) => {
+          setPersons(
+            persons.map((person) => person.id !== nameExists.id ? person : response)
+          )
+        }
+        )
+      }
     } else {
       const nameObject = {
         name: newName,
         number: newNumber
       }
-     personService.create(nameObject).then(response=>{
-      setPersons(prev=>prev.concat(response));
-   })
-     
+      personService.create(nameObject).then(response => {
+        setPersons(prev => prev.concat(response));
+      })
+
     }
     setNewName('');
     setNumber('');
   }
   useEffect(() => {
-      personService.getAll().then((initialData)=>{
-        setPersons(initialData)
-      })
+    personService.getAll().then((initialData) => {
+      setPersons(initialData)
+    })
   }, [])
-  const remove=(id)=>{
-     const person=persons.find(person=>person.id===id);
+  const remove = (id) => {
+    const person = persons.find(person => person.id === id);
 
-     const confirmDelete=window.confirm(
-       `Delete ${person.name}`
-     )
-     if(confirmDelete){
-      personService.deletePerson(id).then(()=>{
-        setPersons(persons.filter(person=>person.id !==id))
+    const confirmDelete = window.confirm(
+      `Delete ${person.name}`
+    )
+    if (confirmDelete) {
+      personService.deletePerson(id).then(() => {
+        setPersons(persons.filter(person => person.id !== id))
       })
-     }
+    }
   }
   return (
     <div>
@@ -66,7 +79,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm newName={newName} addDetails={addDetails} newNumber={newNumber} handleInputChange={handleInputChange}
         handleInputNumber={handleInputNumber} />
-      
+
       <h2>Numbers</h2>
       <Persons filterNames={filterNames} remove={remove} />
     </div>
