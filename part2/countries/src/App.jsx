@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from 'axios';
 import Button from "./Button";
+import WeatherAPI from "./WeatherAPI";
 
 
 function App(){
@@ -44,6 +45,7 @@ function App(){
                 alt={country.flags.alt}
                 width="200"
               />
+              <WeatherAPI capital={country.capital?.[0] || "N/A"}/>
             </div>
   )
   useEffect(()=>{
@@ -69,7 +71,8 @@ function App(){
               {country.name.common}
               <Button text= "show" onClick={()=>setSelectedCountry(country)}/>
                 {
-                  (selectedCountry?.cca3 === country?.cca3 && renderSpecificCountryDetails(country))
+                  selectedCountry?.cca3 === country.cca3 &&
+                   renderSpecificCountryDetails(country)
                 }
             </div>
           ))
