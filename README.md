@@ -1,4 +1,4 @@
-# FullStack Open Course
+# FullStack Course
 
 ## Backend API
 
