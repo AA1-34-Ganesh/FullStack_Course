@@ -1,9 +1,10 @@
+require('dotenv').config()
 const express = require('express');
 const morgan=require('morgan');
 const cors=require('cors');
 const path=require('path');
 const app = express();
-
+const Person=require('./models/phonebook.js')
 app.use(express.json());
 morgan.token('body',(request)=>{
     return JSON.stringify(request.body);
@@ -17,28 +18,7 @@ app.use(cors(
 ))
 
 app.use(express.static('dist'));
-let persons = [
-    {
-        "id": "1",
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": "2",
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": "3",
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": "4",
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-]
+
 
 app.post('/api/persons',(request,response)=>{
     let body=request.body;
@@ -47,22 +27,18 @@ app.post('/api/persons',(request,response)=>{
             error:"Content is missing"
          })
      }
-     let nameExists=persons.some(person=>person.name===body.name);
-     if(nameExists){
-        return response.status(400).json({
-            error:"Name must be unique"
-        })
-     }
-     let newPerson={
-        id:String(Math.floor(Math.random()*100000)),
+    const person=new Person({
         name:body.name,
         number:body.number
-     }
-   persons=persons.concat(newPerson);
-    response.status(201).json(newPerson);
+    })
+   person.save().then(savedPerson=>{
+    response.status(201).json(savedPerson)
+   })
 })
 app.get('/api/persons', (request, response) => {
-    response.json(persons);
+     Person.find({}).then((persons)=>{
+        response.json(persons);
+     })
 })
 app.get('/info',(request,response)=>{
     const date=new Date();
