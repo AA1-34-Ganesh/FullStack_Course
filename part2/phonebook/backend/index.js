@@ -5,7 +5,7 @@ const cors=require('cors');
 const path=require('path');
 const app = express();
 const Person=require('./models/phonebook.js');
-const { error } = require('console');
+
 app.use(express.json());
 morgan.token('body',(request)=>{
     return JSON.stringify(request.body);
@@ -49,13 +49,13 @@ app.get('/info',(request,response)=>{
         <p>${date}</p>
         `)
 })
-app.delete('/api/persons/:id',(request,response)=>{
+app.delete('/api/persons/:id',(request,response,next)=>{
   Person.findByIdAndDelete(request.params.id)
         .then(() => {
             response.status(204).end()
         })
         .catch(error => {
-            console.log(error)
+            next(error)
         })
 })
 app.get('/api/persons/:id',(request,response)=>{
@@ -73,6 +73,17 @@ const unknownRequest=(request,response)=>{
     })
 }
 app.use(unknownRequest);
+
+const errorHandler=(error,req,res,next)=>{
+   console.error(error.message);
+    if (error.name === 'CastError') {
+    return response.status(400).json({
+      error: 'malformatted id'
+    })
+  }
+   next(error)
+}
+app.use(errorHandler);
 const PORT =process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
