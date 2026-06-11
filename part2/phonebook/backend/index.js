@@ -7,10 +7,10 @@ const app = express();
 const Person=require('./models/phonebook.js');
 
 app.use(express.json());
-morgan.token('body',(request)=>{
-    return JSON.stringify(request.body);
+morgan.token('body',(req)=>{
+    return JSON.stringify(req.body);
 })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'  )  );
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors(
     {
         'origin':'http://localhost:5173',
@@ -21,10 +21,10 @@ app.use(cors(
 app.use(express.static('dist'));
 
 
-app.post('/api/persons',(request,response)=>{
-    let body=request.body;
+app.post('/api/persons',(req,res)=>{
+    let body=req.body;
      if(!body.number || !body.name){
-         return response.status(400).json({
+         return res.status(400).json({
             error:"Content is missing"
          })
      }
@@ -33,26 +33,29 @@ app.post('/api/persons',(request,response)=>{
         number:body.number
     })
    person.save().then(savedPerson=>{
-    response.status(201).json(savedPerson)
+    res.status(201).json(savedPerson)
    })
 })
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (req, res) => {
      Person.find({}).then((persons)=>{
-        response.json(persons);
+        res.json(persons);
      })
 })
-app.get('/info',(request,response)=>{
+app.get('/info',(req,res)=>{
+
+    Person.find({}).then(persons =>{
     const date=new Date();
   
-    response.send(`
+    res.send(`
          <p>Phonebook has info for ${persons.length} people</p>
         <p>${date}</p>
-        `)
-})
-app.delete('/api/persons/:id',(request,response,next)=>{
-  Person.findByIdAndDelete(request.params.id)
+        `);
+    });
+});
+app.delete('/api/persons/:id',(req,res,next)=>{
+  Person.findByIdAndDelete(req.params.id)
         .then(() => {
-            response.status(204).end()
+            res.status(204).end()
         })
         .catch(error => {
             next(error)
@@ -77,21 +80,23 @@ app.put('/api/persons/:id',(req,res,next)=>{
     })
     .catch(error=>next(error))
 })
-app.get('/api/persons/:id',(request,response)=>{
-    const id=request.params.id;
-    const data=persons.find(person=>person.id===id)
-    if(data){
-       response.json(data)
-    }else{
-       response.status(404).end()
-    }
+app.get('/api/persons/:id',(req,res,next)=>{
+    Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(error => next(error));
 })
-const unknownRequest=(request,response)=>{
-    response.status(404).send({
+const unknownreq=(req,res)=>{
+    res.status(404).send({
         error:'Unknown endpoint'
     })
 }
-app.use(unknownRequest);
+app.use(unknownreq);
 
 const errorHandler=(error,req,res,next)=>{
    console.error(error.message);
