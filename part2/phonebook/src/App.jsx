@@ -70,6 +70,10 @@ const App = () => {
         setPersons(prev => prev.concat(response));
          showNotification(`Added ${nameObject.name}`,'success' );
       })
+    .catch(error => {
+      console.log(error.response.data)
+         showNotification(error.response.data.error, 'error');
+        })
      
     }
     setNewName('');

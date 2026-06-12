@@ -1,4 +1,4 @@
-require('dotenv').config()
+ require('dotenv').config()
 const express = require('express');
 const morgan=require('morgan');
 const cors=require('cors');
@@ -21,7 +21,7 @@ app.use(cors(
 app.use(express.static('dist'));
 
 
-app.post('/api/persons',(req,res)=>{
+app.post('/api/persons',(req,res,next)=>{
     let body=req.body;
      if(!body.number || !body.name){
          return res.status(400).json({
@@ -32,9 +32,11 @@ app.post('/api/persons',(req,res)=>{
         name:body.name,
         number:body.number
     })
-   person.save().then(savedPerson=>{
-    res.status(201).json(savedPerson)
-   })
+   person.save()
+        .then(savedPerson => {
+            res.status(201).json(savedPerson);
+        })
+        .catch(error => next(error));
 })
 app.get('/api/persons', (req, res) => {
      Person.find({}).then((persons)=>{
@@ -62,23 +64,24 @@ app.delete('/api/persons/:id',(req,res,next)=>{
         })
 })
 app.put('/api/persons/:id',(req,res,next)=>{
-    const{name,number}=req.body;
+    const { name, number } = req.body;
 
-    Person.findById(req.params.id)
-    .then(person=>{
-        if(!person){
-            return res.status(404).end()
-        }
-
-        person.name=name;
-        person.number=number;
-        
-        return person.save()
-    })
-    .then(updatedPerson=>{
-        res.json(updatedPerson)
-    })
-    .catch(error=>next(error))
+    Person.findByIdAndUpdate(
+        req.params.id,
+        { name, 
+            number },
+        { new: true,
+         runValidators: true,
+          context: 'query' }
+    )
+        .then(updatedPerson => {
+            if (updatedPerson) {
+                res.json(updatedPerson);
+            } else {
+                res.status(404).end();
+            }
+        })
+        .catch(error => next(error));
 })
 app.get('/api/persons/:id',(req,res,next)=>{
     Person.findById(req.params.id)
@@ -103,6 +106,10 @@ const errorHandler=(error,req,res,next)=>{
     if (error.name === 'CastError') {
     return res.status(400).json({
       error: 'malformatted id'
+    })
+  }else if(error.name === 'ValidationError') {
+    return res.status(400).json({
+      error: error.message
     })
   }
    next(error)
