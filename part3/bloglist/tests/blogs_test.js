@@ -8,3 +8,20 @@ test('dummy returns one', () => {
   const result = listHelper.dummy(blogs)
   assert.strictEqual(result, 1)
 })
+
+describe('total likes', () => {
+
+  test('empty list returns 0', () => {
+    assert.strictEqual(listHelper.totalLikes([]), 0)
+  })
+
+  test('single blog', () => {
+    assert.strictEqual(
+      listHelper.totalLikes([
+        { likes: 5 }
+      ]),
+      5
+    )
+  })
+
+})
