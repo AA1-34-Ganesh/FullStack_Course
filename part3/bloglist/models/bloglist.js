@@ -2,13 +2,13 @@ const mongoose=require('mongoose')
 
 mongoose.set('strictQuery',false)
 
-const url=process.env.MONGODB_URL
+const config = require('../utils/config')
 
-mongoose.connect(url)
+mongoose.connect(config.MONGODB_URI)
 .then(()=>{
     console.log('Connected to mongodb.');
 }).catch((error)=>{
-    console("Error connecting to mongodb:",error.message);
+    console.log("Error connecting to mongodb:",error.message);
 })
 
 const blogSchema=mongoose.Schema({
