@@ -46,7 +46,40 @@ test('all blogs are returned', async () => {
     initialBlogs.length
   )
 })
+test('blog posts have id property instead of _id', async () => {
+  const response = await api.get('/api/blogs')
 
+  const blog = response.body[0]
+
+  assert(blog.id)
+  assert.strictEqual(blog._id, undefined)
+})
+test('creates a new blog post',async()=>{
+   
+    const newBlog = {
+    title: 'Express Guide',
+    author: 'Ganesh',
+    url: 'express.com',
+    likes: 15
+  }
+  
+  await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(201)
+  .expect('Content-Type', /application\/json/)
+
+  const response=await api.get('/api/blogs')
+
+  assert.strictEqual(
+   response.body.length,
+   initialBlogs.length+1
+  )
+
+  const titles=response.body.map(blog=>blog.title)
+
+  assert(titles.includes(newBlog.title))
+})
 after(async () => {
   await mongoose.connection.close()
 })
