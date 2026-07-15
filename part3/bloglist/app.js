@@ -12,10 +12,16 @@ app.get('/api/blogs', async (req, res) => {
 })
 
 app.post('/api/blogs', async (req, res) => {
-  const blog = new Blog(req.body)
+
+    try{
+          const blog = new Blog(req.body)
   const savedBlog = await blog.save()
 
   res.status(201).json(savedBlog)
+    }catch(error){
+        res.status(400).json({
+            error:error.message
+        })
+    }
 })
-
 module.exports = app
