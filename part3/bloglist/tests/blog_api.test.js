@@ -1,4 +1,4 @@
-const { test, beforeEach, after } = require('node:test')
+const { test, beforeEach, after, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -124,6 +124,27 @@ test('if url is missing,status code 400', async () => {
   const response = await api.get('/api/blogs')
 
   assert.strictEqual(response.body.length, initialBlogs.length)
+})
+describe('deletion of a blog', () => {
+
+  test('succeeds with status code 204', async () => {
+
+    const blogStart = await Blog.find({})
+
+    const blogDelete = blogStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogDelete.id}`)
+      .expect(204)
+
+    const blogEnd = await Blog.find({})
+
+    assert.strictEqual(
+      blogEnd.length,
+      initialBlogs.length - 1
+    )
+  })
+
 })
 after(async () => {
   await mongoose.connection.close()
