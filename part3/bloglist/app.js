@@ -30,4 +30,21 @@ app.delete('/api/blogs/:id', async (req, res) => {
 
   res.status(204).end()
 })
+
+app.put('/api/blogs/:id',async(req,res)=>{
+    try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true
+      }
+    )
+    res.json(updatedBlog)
+  } catch (error) {
+    res.status(400).json({
+        error:error.message
+    })
+  }
+})
 module.exports = app
